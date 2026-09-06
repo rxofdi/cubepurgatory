@@ -1,1 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JC Collection</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="page">
+
+        <nav class="nav-box box">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="collection.html">Collection</a>
+        </nav>
+
+        <section class="currency-box box">
+            <div class="box-title">JC</div>
+            <div id="currency">0.0</div>
+        </section>
+
+        <section class="collection-box box">
+            <div class="box-title">Collection</div>
+
+            <div id="collection-count" class="collection-count">
+                0 cubes collected
+            </div>
+
+            <div id="collection-grid" class="collection-grid"></div>
+
+            <div id="empty-message" class="empty-message">
+                You haven't collected any cubes yet.
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const CURRENCY_KEY = "johnCurrency";
+        const COLLECTION_KEY = "cubeCollection";
+
+        const currency = Number(localStorage.getItem(CURRENCY_KEY)) || 0;
+        const collection = JSON.parse(localStorage.getItem(COLLECTION_KEY)) || {};
+
+        function updateCurrencyDisplay() {
+            document.getElementById("currency").textContent = currency.toFixed(1);
+        }
+
+        function renderCollection() {
+            const grid = document.getElementById("collection-grid");
+            const emptyMessage = document.getElementById("empty-message");
+            const countDisplay = document.getElementById("collection-count");
+
+            grid.innerHTML = "";
+
+            const items = Object.values(collection);
+
+            const totalCubes = items.reduce(
+                (total, item) => total + (Number(item.count) || 0),
+                0
+            );
+
+            countDisplay.textContent =
+                totalCubes + (totalCubes === 1 ? " cube collected" : " cubes collected");
+
+            if (items.length === 0) {
+                emptyMessage.classList.remove("hidden");
+                return;
+            }
+
+            emptyMessage.classList.add("hidden");
+
+            items.sort((a, b) => a.name.localeCompare(b.name));
+
+            items.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "collection-card";
+
+                const cube = document.createElement("div");
+                cube.className = "cube collection-cube";
+
+                if (item.image) {
+                    const image = document.createElement("img");
+                    image.src = item.image;
+                    image.alt = item.name;
+                    cube.appendChild(image);
+                } else {
+                    const placeholder = document.createElement("span");
+                    placeholder.textContent = "?";
+                    cube.appendChild(placeholder);
+                }
+
+                const name = document.createElement("div");
+                name.className = "collection-name";
+                name.textContent = item.name;
+
+                const pack = document.createElement("div");
+                pack.className = "collection-pack";
+                pack.textContent = item.pack;
+
+                const quantity = document.createElement("div");
+                quantity.className = "collection-quantity";
+                quantity.textContent = "x" + item.count;
+
+                card.appendChild(cube);
+                card.appendChild(name);
+                card.appendChild(pack);
+                card.appendChild(quantity);
+
+                grid.appendChild(card);
+            });
+        }
+
+        updateCurrencyDisplay();
+        renderCollection();
+    </script>
+</body>
+</html>
+
 
