@@ -126,3 +126,370 @@ body {
     }
 }
 
+style_css = """* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    padding: 24px;
+}
+
+.page {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.box {
+    background: #000;
+    color: #fff;
+
+    border: 3px solid #fff;
+    border-radius: 10px;
+
+    padding: 18px;
+}
+
+.nav-box {
+    grid-column: 1 / -1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.nav-box a {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav-box a:hover {
+    text-decoration: underline;
+}
+
+.currency-box {
+    min-width: 170px;
+    width: fit-content;
+
+    grid-column: 1 / -1;
+    justify-self: start;
+
+    text-align: center;
+}
+
+.box-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#currency {
+    font-size: 34px;
+    font-weight: bold;
+}
+
+.tasks-box,
+.shop-box,
+.collection-box {
+    grid-column: 1 / -1;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.task-row {
+    min-height: 42px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.task-checkbox {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+
+    accent-color: #fff;
+    cursor: pointer;
+}
+
+.task-checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.task-text {
+    flex: 1;
+    min-width: 0;
+
+    background: #000;
+    color: #fff;
+
+    border: 2px solid #fff;
+    border-radius: 6px;
+
+    padding: 7px 9px;
+
+    font-family: inherit;
+    font-size: 17px;
+
+    outline: none;
+}
+
+.task-text:focus {
+    box-shadow: 0 0 0 2px #fff;
+}
+
+.cooldown-timer {
+    min-width: 36px;
+
+    text-align: right;
+    font-size: 15px;
+}
+
+.wip-box {
+    min-height: 130px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.wip-text {
+    font-size: 20px;
+}
+
+.shop-note {
+    font-size: 17px;
+    margin-top: 0;
+}
+
+.pack-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.pack-card {
+    border: 2px solid #fff;
+    border-radius: 8px;
+    padding: 14px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.pack-title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.pack-preview-grid {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.cube {
+    aspect-ratio: 1;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    background: #000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+.cube span {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.cube img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.small-cube {
+    width: 100%;
+}
+
+.open-pack-button {
+    width: 100%;
+
+    background: #fff;
+    color: #000;
+
+    border: 2px solid #fff;
+    border-radius: 6px;
+
+    padding: 9px 12px;
+
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.open-pack-button:hover {
+    background: #000;
+    color: #fff;
+}
+
+.open-pack-button:active {
+    transform: translateY(1px);
+}
+
+.result-box {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 2px solid #fff;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    text-align: center;
+}
+
+.result-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.result-cube {
+    width: min(220px, 70vw);
+}
+
+.result-name {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.result-pack {
+    font-size: 17px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.collection-count {
+    margin-bottom: 18px;
+    font-size: 18px;
+}
+
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.collection-card {
+    border: 2px solid #fff;
+    border-radius: 8px;
+    padding: 12px;
+
+    text-align: center;
+}
+
+.collection-cube {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.collection-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.collection-pack {
+    font-size: 15px;
+    margin-top: 4px;
+}
+
+.collection-quantity {
+    font-size: 17px;
+    margin-top: 6px;
+}
+
+.empty-message {
+    font-size: 18px;
+    text-align: center;
+    padding: 30px 10px;
+}
+
+@media (max-width: 800px) {
+    .pack-list {
+        grid-template-columns: 1fr;
+    }
+
+    .collection-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .page {
+        grid-template-columns: 1fr;
+    }
+
+    .currency-box,
+    .tasks-box,
+    .shop-box,
+    .collection-box,
+    .nav-box {
+        grid-column: auto;
+    }
+
+    .collection-grid {
+        grid-template-columns: 1fr;
+    }
+}
+"""
+
+(out / "index.html").write_text(index_html, encoding="utf-8")
+(out / "shop.html").write_text(shop_html, encoding="utf-8")
+(out / "collection.html").write_text(collection_html, encoding="utf-8")
+(out / "style.css").write_text(style_css, encoding="utf-8")
+
+print("Created/updated:")
+for name in ("index.html", "shop.html", "collection.html", "style.css"):
+    print(out / name)
+
+
