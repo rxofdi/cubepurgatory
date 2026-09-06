@@ -1,1 +1,504 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JC Productivity</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="page">
+
+        <nav class="nav-box box">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="collection.html">Collection</a>
+        </nav>
+
+        <!-- Currency -->
+        <section class="currency-box box">
+            <div class="box-title">JC</div>
+            <div id="currency">0.0</div>
+        </section>
+
+        <!-- Daily Tasks -->
+        <section class="tasks-box box">
+            <div class="box-title">Daily Tasks</div>
+
+            <div id="task-list" class="task-list"></div>
+        </section>
+
+        <!-- WIP Sections -->
+        <section class="wip-box box">
+            <div class="wip-text">WIP: reading</div>
+        </section>
+
+        <section class="wip-box box">
+            <div class="wip-text">WIP: shop</div>
+        </section>
+
+        <section class="wip-box box">
+            <div class="wip-text">WIP: Collection</div>
+        </section>
+
+    </main>
+
+    <script>
+        const CURRENCY_KEY = "johnCurrency";
+        const TASKS_KEY = "dailyTasks";
+        const COOLDOWNS_KEY = "taskCooldowns";
+
+        const TASK_COUNT = 10;
+        const TASK_REWARD = 0.5;
+        const COOLDOWN_MS = 60 * 1000;
+
+        let currency = Number(localStorage.getItem(CURRENCY_KEY)) || 0;
+        let tasks = JSON.parse(localStorage.getItem(TASKS_KEY)) || [];
+        let cooldowns = JSON.parse(localStorage.getItem(COOLDOWNS_KEY)) || {};
+
+        function createDefaultTasks() {
+            return Array.from({ length: TASK_COUNT }, (_, index) => ({
+                id: index,
+                text: "Task " + (index + 1)
+            }));
+        }
+
+        function normalizeTasks() {
+            const defaults = createDefaultTasks();
+
+            if (!Array.isArray(tasks)) {
+                tasks = defaults;
+            }
+
+            while (tasks.length < TASK_COUNT) {
+                const index = tasks.length;
+                tasks.push(defaults[index]);
+            }
+
+            tasks = tasks.slice(0, TASK_COUNT).map((task, index) => ({
+                id: index,
+                text: typeof task?.text === "string"
+                    ? task.text
+                    : "Task " + (index + 1)
+            }));
+        }
+
+        function saveCurrency() {
+            localStorage.setItem(CURRENCY_KEY, currency.toFixed(1));
+        }
+
+        function saveTasks() {
+            localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+        }
+
+        function saveCooldowns() {
+            localStorage.setItem(COOLDOWNS_KEY, JSON.stringify(cooldowns));
+        }
+
+        function updateCurrencyDisplay() {
+            document.getElementById("currency").textContent = currency.toFixed(1);
+        }
+
+        function isCoolingDown(taskId) {
+            const cooldownEnd = Number(cooldowns[taskId]) || 0;
+            return cooldownEnd > Date.now();
+        }
+
+        function getRemainingSeconds(taskId) {
+            const cooldownEnd = Number(cooldowns[taskId]) || 0;
+            return Math.max(0, Math.ceil((cooldownEnd - Date.now()) / 1000));
+        }
+
+        function awardTask(taskId) {
+            if (isCoolingDown(taskId)) {
+                return;
+            }
+
+            currency += TASK_REWARD;
+            currency = Math.round(currency * 10) / 10;
+
+            cooldowns[taskId] = Date.now() + COOLDOWN_MS;
+
+            saveCurrency();
+            saveCooldowns();
+
+            updateCurrencyDisplay();
+            renderTasks();
+        }
+
+        function editTask(taskId, input) {
+            const task = tasks.find(item => item.id === taskId);
+
+            if (!task) {
+                return;
+            }
+
+            task.text = input.value;
+            saveTasks();
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById("task-list");
+            taskList.innerHTML = "";
+
+            tasks.forEach(task => {
+                const row = document.createElement("div");
+                row.className = "task-row";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "task-checkbox";
+                checkbox.checked = false;
+                checkbox.disabled = isCoolingDown(task.id);
+
+                checkbox.addEventListener("change", () => {
+                    if (checkbox.checked) {
+                        awardTask(task.id);
+                    }
+                });
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.className = "task-text";
+                input.value = task.text;
+                input.setAttribute("aria-label", "Task " + (task.id + 1));
+
+                input.addEventListener("input", () => {
+                    editTask(task.id, input);
+                });
+
+                const timer = document.createElement("span");
+                timer.className = "cooldown-timer";
+
+                if (isCoolingDown(task.id)) {
+                    timer.textContent = getRemainingSeconds(task.id) + "s";
+                }
+
+                row.appendChild(checkbox);
+                row.appendChild(input);
+                row.appendChild(timer);
+
+                taskList.appendChild(row);
+            });
+        }
+
+        function updateCooldowns() {
+            let changed = false;
+
+            Object.keys(cooldowns).forEach(taskId => {
+                if (!isCoolingDown(taskId)) {
+                    delete cooldowns[taskId];
+                    changed = true;
+                }
+            });
+
+            if (changed) {
+                saveCooldowns();
+            }
+
+            renderTasks();
+        }
+
+        normalizeTasks();
+        saveTasks();
+        saveCurrency();
+        updateCurrencyDisplay();
+        renderTasks();
+
+        setInterval(updateCooldowns, 250);
+    </script>
+</body>
+</html>
+"""
+
+shop_html = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JC Shop</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="page">
+
+        <nav class="nav-box box">
+            <a href="index.html">Home</a>
+            <a href="shop.html">Shop</a>
+            <a href="collection.html">Collection</a>
+        </nav>
+
+        <section class="currency-box box">
+            <div class="box-title">JC</div>
+            <div id="currency">0.0</div>
+        </section>
+
+        <section class="shop-box box">
+            <div class="box-title">Cube Packs</div>
+            <p class="shop-note">
+                Each pack costs <strong id="pack-cost-display">1.0</strong> JC.
+                Open a pack to receive one random cube.
+            </p>
+
+            <div id="pack-list" class="pack-list"></div>
+
+            <div id="result-box" class="result-box hidden">
+                <div class="result-title">You got:</div>
+                <div id="result-cube" class="cube result-cube"></div>
+                <div id="result-name" class="result-name"></div>
+                <div id="result-pack" class="result-pack"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // ==========================================================
+        // EASY-TO-EDIT PACK DATA
+        //
+        // Add more items to any pack by copying an item object.
+        // "chance" values are percentages.
+        //
+        // "image" can later be replaced with an image path, such as:
+        // image: "images/spiderman.png"
+        //
+        // The three placeholders below each have an equal chance.
+        // ==========================================================
+
+        const PACK_COST = 1.0;
+
+        const PACKS = {
+            "Spider-Man": {
+                items: [
+                    {
+                        id: "spiderman-placeholder-1",
+                        name: "Spider-Man Placeholder 1",
+                        chance: 33.33,
+                        image: null
+                    },
+                    {
+                        id: "spiderman-placeholder-2",
+                        name: "Spider-Man Placeholder 2",
+                        chance: 33.33,
+                        image: null
+                    },
+                    {
+                        id: "spiderman-placeholder-3",
+                        name: "Spider-Man Placeholder 3",
+                        chance: 33.34,
+                        image: null
+                    }
+                ]
+            },
+
+            "X-Men": {
+                items: [
+                    {
+                        id: "xmen-placeholder-1",
+                        name: "X-Men Placeholder 1",
+                        chance: 33.33,
+                        image: null
+                    },
+                    {
+                        id: "xmen-placeholder-2",
+                        name: "X-Men Placeholder 2",
+                        chance: 33.33,
+                        image: null
+                    },
+                    {
+                        id: "xmen-placeholder-3",
+                        name: "X-Men Placeholder 3",
+                        chance: 33.34,
+                        image: null
+                    }
+                ]
+            },
+
+            "Batfamily": {
+                items: [
+                    {
+                        id: "batfamily-placeholder-1",
+                        name: "Batfamily Placeholder 1",
+                        chance: 33.33,
+                        image: null
+                    },
+                    {
+                        id: "batfamily-placeholder-2",
+                        name: "Batfamily Placeholder 2",
+                        chance: 33.33,
+                        image: null
+                    },
+                    {
+                        id: "batfamily-placeholder-3",
+                        name: "Batfamily Placeholder 3",
+                        chance: 33.34,
+                        image: null
+                    }
+                ]
+            }
+        };
+
+        const CURRENCY_KEY = "johnCurrency";
+        const COLLECTION_KEY = "cubeCollection";
+
+        let currency = Number(localStorage.getItem(CURRENCY_KEY)) || 0;
+        let collection = JSON.parse(localStorage.getItem(COLLECTION_KEY)) || {};
+
+        function saveCurrency() {
+            localStorage.setItem(CURRENCY_KEY, currency.toFixed(1));
+        }
+
+        function saveCollection() {
+            localStorage.setItem(COLLECTION_KEY, JSON.stringify(collection));
+        }
+
+        function updateCurrencyDisplay() {
+            document.getElementById("currency").textContent = currency.toFixed(1);
+        }
+
+        function chooseRandomItem(items) {
+            const random = Math.random() * 100;
+            let runningTotal = 0;
+
+            for (const item of items) {
+                runningTotal += Number(item.chance) || 0;
+
+                if (random < runningTotal) {
+                    return item;
+                }
+            }
+
+            // Protect against rounding mistakes if chances don't total 100.
+            return items[items.length - 1];
+        }
+
+        function addToCollection(packName, item) {
+            const collectionId = item.id;
+
+            if (!collection[collectionId]) {
+                collection[collectionId] = {
+                    id: item.id,
+                    name: item.name,
+                    image: item.image,
+                    pack: packName,
+                    count: 0
+                };
+            }
+
+            collection[collectionId].count += 1;
+            saveCollection();
+        }
+
+        function showResult(packName, item) {
+            const resultBox = document.getElementById("result-box");
+            const resultCube = document.getElementById("result-cube");
+            const resultName = document.getElementById("result-name");
+            const resultPack = document.getElementById("result-pack");
+
+            resultCube.innerHTML = "";
+
+            if (item.image) {
+                const image = document.createElement("img");
+                image.src = item.image;
+                image.alt = item.name;
+                resultCube.appendChild(image);
+            } else {
+                const placeholder = document.createElement("span");
+                placeholder.textContent = "?";
+                resultCube.appendChild(placeholder);
+            }
+
+            resultName.textContent = item.name;
+            resultPack.textContent = "From " + packName + " Pack";
+
+            resultBox.classList.remove("hidden");
+        }
+
+        function openPack(packName) {
+            const pack = PACKS[packName];
+
+            if (!pack) {
+                return;
+            }
+
+            if (currency < PACK_COST) {
+                alert("You do not have enough JC for this pack.");
+                return;
+            }
+
+            if (!pack.items.length) {
+                alert("This pack has no items in it yet.");
+                return;
+            }
+
+            currency -= PACK_COST;
+            currency = Math.round(currency * 10) / 10;
+
+            const item = chooseRandomItem(pack.items);
+
+            addToCollection(packName, item);
+
+            saveCurrency();
+            updateCurrencyDisplay();
+            showResult(packName, item);
+        }
+
+        function createPackCards() {
+            const packList = document.getElementById("pack-list");
+            packList.innerHTML = "";
+
+            Object.keys(PACKS).forEach(packName => {
+                const pack = PACKS[packName];
+
+                const card = document.createElement("div");
+                card.className = "pack-card";
+
+                const title = document.createElement("div");
+                title.className = "pack-title";
+                title.textContent = packName;
+
+                const previewGrid = document.createElement("div");
+                previewGrid.className = "pack-preview-grid";
+
+                pack.items.forEach(item => {
+                    const preview = document.createElement("div");
+                    preview.className = "cube small-cube";
+
+                    if (item.image) {
+                        const image = document.createElement("img");
+                        image.src = item.image;
+                        image.alt = item.name;
+                        preview.appendChild(image);
+                    } else {
+                        const placeholder = document.createElement("span");
+                        placeholder.textContent = "?";
+                        preview.appendChild(placeholder);
+                    }
+                });
+
+                const button = document.createElement("button");
+                button.className = "open-pack-button";
+                button.textContent = "Open Pack";
+
+                button.addEventListener("click", () => {
+                    openPack(packName);
+                });
+
+                card.appendChild(title);
+                card.appendChild(previewGrid);
+                card.appendChild(button);
+
+                packList.appendChild(card);
+            });
+        }
+
+        document.getElementById("pack-cost-display").textContent =
+            PACK_COST.toFixed(1);
+
+        saveCurrency();
+        updateCurrencyDisplay();
+        createPackCards();
+    </script>
+</body>
+</html>
