@@ -1,1 +1,128 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+body {
+    background: #000;
+    color: #fff;
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    padding: 24px;
+}
+
+.page {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.box {
+    background: #000;
+    border: 3px solid #fff;
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.currency-box {
+    width: fit-content;
+    min-width: 170px;
+    grid-column: 1 / -1;
+    justify-self: start;
+    text-align: center;
+}
+
+.box-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#currency {
+    font-size: 34px;
+    font-weight: bold;
+}
+
+.tasks-box {
+    grid-column: 1 / -1;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.task-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+}
+
+.task-checkbox {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    accent-color: #fff;
+    cursor: pointer;
+}
+
+.task-checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.task-text {
+    flex: 1;
+    min-width: 0;
+    background: #000;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 17px;
+    padding: 7px 9px;
+    outline: none;
+}
+
+.task-text:focus {
+    box-shadow: 0 0 0 2px #fff;
+}
+
+.cooldown-timer {
+    min-width: 36px;
+    text-align: right;
+    font-size: 15px;
+}
+
+.wip-box {
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.wip-text {
+    font-size: 20px;
+}
+
+@media (max-width: 650px) {
+    .page {
+        grid-template-columns: 1fr;
+    }
+
+    .currency-box,
+    .tasks-box {
+        grid-column: auto;
+    }
+}
 
